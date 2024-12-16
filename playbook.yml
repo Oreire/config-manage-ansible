@@ -1,0 +1,16 @@
+# This YAML file Installs Nginx on Two EC2 Intsances
+---
+- name: Install and configure Nginx
+  hosts: web_servers
+  become: yes
+  tasks:
+    - name: Install Nginx
+      apt:
+        name: nginx
+        state: present
+
+    - name: Start and enable Nginx service
+      service:
+        name: nginx
+        state: started
+        enabled: yes

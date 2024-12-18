@@ -44,7 +44,7 @@ resource "aws_security_group" "ansible_sg" {
   }
 }
 
-
+#ami-05c172c7f0d3aed00
 
 #Create AWS EC2 Instance (Web Servers)
 

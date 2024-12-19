@@ -48,11 +48,11 @@ resource "aws_security_group" "ansible_sg" {
 
 resource "aws_instance" "web_nodes" {
   count                  = 2
-  ami                    = "ami-0c76bd4bd302b30ec" 
-  instance_type          = "t2.micro"              
-  key_name               = "ANSIBLE-SSH-KEY"          
+  ami                    = "ami-0c76bd4bd302b30ec"
+  instance_type          = "t2.micro"
+  key_name               = "ANSIBLE-SSH-KEY"
   vpc_security_group_ids = [aws_security_group.ansible_sg.id]
-    tags = {
+  tags = {
     Name         = " Web-Node-${count.index + 1} "
     Time-Created = formatdate("MM DD YYYY hh:mm ZZZ", timestamp())
     Department   = "DevOps"

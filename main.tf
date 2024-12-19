@@ -44,47 +44,38 @@ resource "aws_security_group" "ansible_sg" {
   }
 }
 
-#ami-05c172c7f0d3aed00
-
 #Create AWS EC2 Instance (Web Servers)
 
-resource "aws_instance" "node1" {
+resource "aws_instance" "web_nodes" {
+  count                  = 2
   ami                    = "ami-0c76bd4bd302b30ec" 
   instance_type          = "t2.micro"              
   key_name               = "ANSIBLE-SSH-KEY"          
   vpc_security_group_ids = [aws_security_group.ansible_sg.id]
-  tags = {
-    Name = var.node1
+    tags = {
+    Name         = " Web-Node-${count.index + 1} "
+    Time-Created = formatdate("MM DD YYYY hh:mm ZZZ", timestamp())
+    Department   = "DevOps"
+  }
+
+}
+resource "null_resource" "generate_inventory" {
+  depends_on = [aws_instance.web_nodes]
+
+  provisioner "local-exec" {
+    command = <<EOF
+      echo "[web_nodes]" > ./inventory.ini
+      echo "${join("\n", aws_instance.web_nodes.*.public_ip)}" >> ./inventory.ini
+    EOF
   }
 }
 
-#Create AWS EC2 Instance (Backend Node)
-
-resource "aws_instance" "node2" {
-  ami                    = "ami-0c76bd4bd302b30ec" 
-  instance_type          = "t2.micro"              
-  key_name               = "ANSIBLE-SSH-KEY"         
-  vpc_security_group_ids = [aws_security_group.ansible_sg.id]
-  tags = {
-    Name = var.node2
-  }
-}
-
-resource "aws_instance" "ansible_node" {
+/* resource "aws_instance" "ansible_node" {
   ami           = "ami-0c76bd4bd302b30ec"
   instance_type = "t2.micro"
   key_name      = "SSH-KEY"
   tags = {
     Name = "ANSIBLE NODE"
   }
+ */
 
-  provisioner "remote-exec" {
-    inline = [
-      "ssh -i SSH-KEY.pem ec2-user@ec2-13-43-137-91.eu-west-2.compute.amazonaws.com 'ansible-playbook -i inventory.ini playbook.yml'"
-    ]
-  }
-}
-
-
-variable "node1" {}
-variable "node2" {}

@@ -44,14 +44,5 @@
         name: java-1.8.0-openjdk
         state: present
       when: ansible_os_family == "RedHat"
-      [nginx_servers]
-      nginx_server1 ansible_host=192.168.1.10
-      nginx_server2 ansible_host=192.168.1.11
 
-      [java_servers]
-      java_server1 ansible_host=192.168.1.20
-      java_server2 ansible_host=192.168.1.21
-
-      [all:vars]
-      ansible_user=your_username
-      ansible_ssh_private_key_file=/path/to/your/private/key
+      

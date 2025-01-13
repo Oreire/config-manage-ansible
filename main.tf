@@ -64,8 +64,17 @@ resource "null_resource" "generate_inventory" {
 
   provisioner "local-exec" {
     command = <<EOF
-      echo "[web_nodes]" > ./inventory.ini
-      echo "${join("\n", aws_instance.web_nodes.*.public_ip)}" >> ./inventory.ini
+      # Retrieve instance IPs from Terraform output
+      web_nodes_ips=$(terraform output -json web_nodes_ips | jq -r '.[]')
+
+      # Create Ansible inventory file
+      inventory_file="inventory.ini"
+      echo "[web_nodes]" > $inventory_file
+
+      # Append each IP address to the inventory file
+      for ip in $web_nodes_ips; do
+        echo $ip >> $inventory_file
+      done
     EOF
   }
 }

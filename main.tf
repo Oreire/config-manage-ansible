@@ -13,6 +13,8 @@ provider "aws" {
   region = "eu-west-2"
 }
 
+
+
 #Create Security Group for web servers  
 resource "aws_security_group" "ansible_sg" {
   name        = "ANSIBLE-SG"

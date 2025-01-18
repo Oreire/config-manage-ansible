@@ -1,10 +1,8 @@
-#Outputs of the EC2 Instances (web_nodes)
-
-/* output "web_server_public_dns" {
-  value = aws_instance.web_nodes[*].public_dns
-}
- */
+#Outputs of the EC2 Instances (web and app nodes)
 output "web_nodes_ips" {
-  value = aws_instance.web_nodes.*.public_ip
+  value = aws_instance.web.*.public_ip
 }
 
+output "app_nodes_ips" {
+  value = aws_instance.app.*.public_ip
+}

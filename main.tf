@@ -11,13 +11,22 @@ terraform {
 
 provider "aws" {
   region = "eu-west-2"
+  access_key = var.AWS_ACCESS_KEY_ID
+  secret_key = var.AWS_SECRET_KEY_ID
 }
 
-
+variable {
+  AWS_ACCESS_KEY_ID = {
+    type = string
+  }
+  AWS_SECRET_KEY_ID = {
+    type = string
+  }
+} 
 
 #Create Security Group for web servers  
-resource "aws_security_group" "ansible_sg" {
-  name        = "ANSIBLE-SG"
+resource "aws_security_group" "inventory_sg" {
+  name        = "INVENTORY-SG"
   description = "Security Group for web server 1"
   # ... other configuration ...
   egress {
@@ -48,12 +57,12 @@ resource "aws_security_group" "ansible_sg" {
 
 #Create AWS EC2 Instance (Web Servers)
 
-resource "aws_instance" "web_nodes" {
+resource "aws_instance" "web" {
   count                  = 2
   ami                    = "ami-0c76bd4bd302b30ec"
   instance_type          = "t2.micro"
-  key_name               = "ANSIBLE-SSH-KEY"
-  vpc_security_group_ids = [aws_security_group.ansible_sg.id]
+  key_name               = "NewAxeCred"
+  vpc_security_group_ids = [aws_security_group.inventory_sg.id]
   tags = {
     Name         = " Web-Node-${count.index + 1} "
     Time-Created = formatdate("MM DD YYYY hh:mm ZZZ", timestamp())
@@ -61,8 +70,22 @@ resource "aws_instance" "web_nodes" {
   }
 
 }
-resource "null_resource" "generate_inventory" {
-  depends_on = [aws_instance.web_nodes]
+
+resource "aws_instance" "app" {
+  count                  = 2
+  ami                    = "ami-0c76bd4bd302b30ec"
+  instance_type          = "t2.micro"
+  key_name               = "NewAxeCred"
+  vpc_security_group_ids = [aws_security_group.inventory_sg.id]
+  tags = {
+    Name         = " App-Node-${count.index + 1} "
+    Time-Created = formatdate("MM DD YYYY hh:mm ZZZ", timestamp())
+    Department   = "DevOps"
+  }
+
+}
+/* resource "null_resource" "generate_inventory" {
+  depends_on = [aws_instance.web]
 
   provisioner "local-exec" {
     command = <<EOF
@@ -79,7 +102,7 @@ resource "null_resource" "generate_inventory" {
       done
     EOF
   }
-}
+} */
 
 /* resource "aws_instance" "ansible_node" {
   ami           = "ami-0c76bd4bd302b30ec"

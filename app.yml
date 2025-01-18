@@ -1,0 +1,16 @@
+---
+- name: Install Java on java_servers
+  hosts: java_servers
+  become: yes
+  tasks:
+    - name: Install Java on Debian/Ubuntu
+      apt:
+        name: default-jdk
+        state: present
+      when: ansible_os_family == "Debian"
+
+    - name: Install Java on CentOS/RedHat
+      yum:
+        name: java-1.8.0-openjdk
+        state: present
+      when: ansible_os_family == "RedHat"
